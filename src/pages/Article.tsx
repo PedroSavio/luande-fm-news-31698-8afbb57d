@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { SITE_URL } from "@/lib/site";
 import Header from "@/components/layout/Header";
@@ -7,7 +7,6 @@ import Footer from "@/components/layout/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, User, ArrowLeft, Share2 } from "lucide-react";
-import { toast } from "sonner";
 import { MediaGalleryCarousel } from "@/components/article/MediaGalleryCarousel";
 import { ShareDialog } from "@/components/article/ShareDialog";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,6 +33,7 @@ const Article = () => {
   const navigate = useNavigate();
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
 
@@ -82,7 +82,24 @@ const Article = () => {
     };
   }, [article]);
 
+  // Artigo inexistente: não redireciona (o Googlebot registraria como redirect),
+  // mostra a tela de "não encontrada" e pede para não indexar.
+  useEffect(() => {
+    if (!notFound) return;
+
+    const meta = document.createElement("meta");
+    meta.setAttribute("name", "robots");
+    meta.setAttribute("content", "noindex, follow");
+    document.head.appendChild(meta);
+
+    return () => {
+      meta.remove();
+    };
+  }, [notFound]);
+
   const loadArticle = async () => {
+    setLoading(true);
+    setNotFound(false);
     try {
       const { data, error } = await supabase
         .from("articles")
@@ -106,8 +123,8 @@ const Article = () => {
       }
     } catch (error) {
       console.error("Erro ao carregar artigo:", error);
-      toast.error("Artigo não encontrado");
-      navigate("/");
+      setArticle(null);
+      setNotFound(true);
     } finally {
       setLoading(false);
     }
@@ -146,7 +163,23 @@ const Article = () => {
   }
 
   if (!article) {
-    return null;
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-background">
+          <div className="container mx-auto px-4 py-16 max-w-2xl text-center">
+            <h1 className="text-3xl font-bold mb-4">Matéria não encontrada</h1>
+            <p className="text-muted-foreground mb-8">
+              A matéria que você procura não existe ou foi removida.
+            </p>
+            <Button asChild>
+              <Link to="/">Voltar para a página inicial</Link>
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   const formatDate = (date: string) => {
@@ -237,34 +270,32 @@ const Article = () => {
               <h2 className="text-2xl font-bold mb-6">Matérias Relacionadas</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {relatedArticles.map((related) => (
-                  <Card
-                    key={related.id}
-                    className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                    onClick={() => navigate(`/artigo/${related.slug}`)}
-                  >
-                    {related.image_url && (
-                      <div className="relative h-48 overflow-hidden">
-                        <img
-                          src={related.image_url}
-                          alt={related.title}
-                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                        />
-                        <Badge className="absolute top-2 left-2">{related.category}</Badge>
-                      </div>
-                    )}
-                    <CardContent className="p-4">
-                      <h3 className="font-bold text-lg mb-2 line-clamp-2 hover:text-primary transition-colors">
-                        {related.title}
-                      </h3>
-                      {related.subtitle && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{related.subtitle}</p>
+                  <Link key={related.id} to={`/artigo/${related.slug}`} className="block">
+                    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
+                      {related.image_url && (
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={related.image_url}
+                            alt={related.title}
+                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                          />
+                          <Badge className="absolute top-2 left-2">{related.category}</Badge>
+                        </div>
                       )}
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Clock className="w-3 h-3" />
-                        <span>{formatDate(related.created_at)}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      <CardContent className="p-4">
+                        <h3 className="font-bold text-lg mb-2 line-clamp-2 hover:text-primary transition-colors">
+                          {related.title}
+                        </h3>
+                        {related.subtitle && (
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{related.subtitle}</p>
+                        )}
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          <span>{formatDate(related.created_at)}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 ))}
               </div>
             </div>

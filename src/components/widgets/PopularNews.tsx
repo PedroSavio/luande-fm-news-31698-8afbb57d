@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
@@ -11,7 +11,6 @@ interface PopularNewsItem {
 }
 
 const PopularNews = () => {
-  const navigate = useNavigate();
   const [popularNews, setPopularNews] = useState<PopularNewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -91,10 +90,6 @@ const PopularNews = () => {
     return views.toString();
   };
 
-  const handleArticleClick = (slug: string) => {
-    navigate(`/artigo/${slug}`);
-  };
-
   if (loading) {
     return (
       <Card>
@@ -133,12 +128,8 @@ const PopularNews = () => {
         ) : (
           <ul className="space-y-4">
             {popularNews.map((news, index) => (
-              <li 
-                key={index} 
-                className="group cursor-pointer"
-                onClick={() => handleArticleClick(news.slug)}
-              >
-                <div className="flex gap-3">
+              <li key={index} className="group cursor-pointer">
+                <Link to={`/artigo/${news.slug}`} className="flex gap-3">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
                     {index + 1}
                   </span>
@@ -152,7 +143,7 @@ const PopularNews = () => {
                       </span>
                     )}
                   </div>
-                </div>
+                </Link>
               </li>
             ))}
           </ul>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { supabaseClient } from "@/lib/supabase-client";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -7,7 +7,6 @@ import NewsCard from "@/components/news/NewsCard";
 
 const Category = () => {
   const { category } = useParams();
-  const navigate = useNavigate();
   const [articles, setArticles] = useState<any[]>([]);
   const [categoryName, setCategoryName] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -49,9 +48,6 @@ const Category = () => {
     }
   };
 
-  const handleArticleClick = (slug: string) => {
-    navigate(`/artigo/${slug}`);
-  };
 
   const formatDate = (date: string) => {
     const now = new Date();
@@ -101,7 +97,7 @@ const Category = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => (
-              <div key={article.id} onClick={() => handleArticleClick(article.slug)} className="cursor-pointer">
+              <Link key={article.id} to={`/artigo/${article.slug}`} className="block cursor-pointer">
                 <NewsCard
                   title={article.title}
                   excerpt={article.subtitle || article.content.substring(0, 150) + "..."}
@@ -110,7 +106,7 @@ const Category = () => {
                   author="Redação LuandêFM"
                   date={formatDate(article.created_at)}
                 />
-              </div>
+              </Link>
             ))}
           </div>
         )}

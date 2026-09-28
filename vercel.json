@@ -2,46 +2,70 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "/sitemap.xml"
-    },
-    {
-      "source": "/robots.txt",
-      "destination": "/robots.txt"
-    },
-    {
-      "source": "/ads.txt",
-      "destination": "/ads.txt"
-    },
-    {
-      "source": "/favicon.png",
-      "destination": "/favicon.png"
+      "destination": "/api/sitemap"
     },
     {
       "source": "/artigo/:slug",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|TelegramBot|Pinterest).*"
-        }
-      ],
-      "destination": "https://iyijnxplswxeezhkowpn.supabase.co/functions/v1/article-share?slug=:slug&origin=https%3A%2F%2Fwww.luandefm.net"
+      "destination": "/api/artigo?slug=:slug"
     },
     {
-      "source": "/((?!.*\\.).*)",
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/categoria/:category",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/busca",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/enviar-noticia",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/eventos",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/sobre-nos",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contato",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/politica-de-privacidade",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/termos-de-uso",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/videos",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/create-admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/:path*",
       "destination": "/index.html"
     }
   ],
   "headers": [
-    {
-      "source": "/sitemap.xml",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/xml"
-        }
-      ]
-    },
     {
       "source": "/robots.txt",
       "headers": [
@@ -52,7 +76,7 @@
       ]
     }
   ],
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && cp dist/index.html dist/404.html",
   "outputDirectory": "dist",
   "framework": "vite"
 }

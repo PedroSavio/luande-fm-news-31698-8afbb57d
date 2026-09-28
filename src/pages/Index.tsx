@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -21,7 +21,6 @@ import { Clock, ChevronRight, Play } from "lucide-react";
 import sergipeMap from "@/assets/sergipe-map.png";
 
 const Index = () => {
-  const navigate = useNavigate();
   const [articles, setArticles] = useState<any[]>(() => {
     try {
       const cached = localStorage.getItem("cached_articles");
@@ -90,9 +89,6 @@ const Index = () => {
     }
   };
 
-  const handleArticleClick = (slug: string) => {
-    navigate(`/artigo/${slug}`);
-  };
 
   const formatDate = (date: string) => {
     const now = new Date();
@@ -146,9 +142,9 @@ const Index = () => {
         {heroArticle && (
           <section className="container mx-auto px-4 mb-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div
-                className="lg:col-span-2 relative rounded-lg overflow-hidden cursor-pointer group"
-                onClick={() => handleArticleClick(heroArticle.slug)}
+              <Link
+                to={`/artigo/${heroArticle.slug}`}
+                className="block lg:col-span-2 relative rounded-lg overflow-hidden cursor-pointer group"
               >
                 <img
                   src={heroArticle.image_url || "/placeholder.svg"}
@@ -171,14 +167,14 @@ const Index = () => {
                     <span>{formatDate(heroArticle.created_at)}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
 
               <div className="flex flex-col gap-3">
                 {secondaryArticles.map((article: any) => (
-                  <div
+                  <Link
                     key={article.id}
-                    className="relative rounded-lg overflow-hidden cursor-pointer group flex-1 min-h-[120px]"
-                    onClick={() => handleArticleClick(article.slug)}
+                    to={`/artigo/${article.slug}`}
+                    className="block relative rounded-lg overflow-hidden cursor-pointer group flex-1 min-h-[120px]"
                   >
                     <img
                       src={article.image_url || "/placeholder.svg"}
@@ -192,7 +188,7 @@ const Index = () => {
                         {article.title}
                       </h3>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -213,10 +209,10 @@ const Index = () => {
                 </div>
                 <div className="space-y-0 divide-y divide-border">
                   {latestArticles.slice(4, 14).map((article: any) => (
-                    <article
+                    <Link
                       key={article.id}
+                      to={`/artigo/${article.slug}`}
                       className="flex gap-4 py-4 cursor-pointer group"
-                      onClick={() => handleArticleClick(article.slug)}
                     >
                       <img
                         src={article.image_url || "/placeholder.svg"}
@@ -238,7 +234,7 @@ const Index = () => {
                           <span>{formatDate(article.created_at)}</span>
                         </div>
                       </div>
-                    </article>
+                    </Link>
                   ))}
                 </div>
               </section>
@@ -265,9 +261,9 @@ const Index = () => {
                     </div>
 
                     {catArticles[0] && (
-                      <div
-                        className="mb-4 cursor-pointer group"
-                        onClick={() => handleArticleClick(catArticles[0].slug)}
+                      <Link
+                        to={`/artigo/${catArticles[0].slug}`}
+                        className="block mb-4 cursor-pointer group"
                       >
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <img
@@ -290,15 +286,15 @@ const Index = () => {
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     )}
 
                     <div className="space-y-0 divide-y divide-border">
                       {catArticles.slice(1, 5).map((article: any) => (
-                        <div
+                        <Link
                           key={article.id}
+                          to={`/artigo/${article.slug}`}
                           className="flex items-start gap-3 py-3 cursor-pointer group"
-                          onClick={() => handleArticleClick(article.slug)}
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></span>
                           <div className="flex-1 min-w-0">
@@ -307,7 +303,7 @@ const Index = () => {
                             </h4>
                             <span className="text-xs text-muted-foreground font-body">{formatDate(article.created_at)}</span>
                           </div>
-                        </div>
+                        </Link>
                       ))}
                     </div>
                   </section>

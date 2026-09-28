@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import BreakingNews from "@/components/layout/BreakingNews";
 import DateTimeBanner from "@/components/layout/DateTimeBanner";
@@ -9,7 +9,6 @@ import NewsCard from "@/components/news/NewsCard";
 
 const Search = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const query = searchParams.get("q") || "";
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,9 +40,6 @@ const Search = () => {
     }
   };
 
-  const handleArticleClick = (slug: string) => {
-    navigate(`/artigo/${slug}`);
-  };
 
   const formatDate = (date: string) => {
     const now = new Date();
@@ -110,7 +106,7 @@ const Search = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => (
-              <div key={article.id} onClick={() => handleArticleClick(article.slug)} className="cursor-pointer">
+              <Link key={article.id} to={`/artigo/${article.slug}`} className="block cursor-pointer">
                 <NewsCard
                   title={article.title}
                   excerpt={article.subtitle || article.content.substring(0, 150) + "..."}
@@ -119,7 +115,7 @@ const Search = () => {
                   author="Redação LuandêFM"
                   date={formatDate(article.created_at)}
                 />
-              </div>
+              </Link>
             ))}
           </div>
         )}
