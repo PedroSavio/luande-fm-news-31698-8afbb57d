@@ -62,3 +62,9 @@ export async function GET() {
     return new Response("Erro ao gerar sitemap", { status: 500 });
   }
 }
+
+// Monitores e validadores costumam checar a URL com HEAD; sem isso a Vercel responde 405.
+export async function HEAD() {
+  const response = await GET();
+  return new Response(null, { status: response.status, headers: response.headers });
+}

@@ -213,3 +213,9 @@ export async function GET(request: Request) {
     return new Response("Erro ao carregar a matéria", { status: 500 });
   }
 }
+
+// Monitores e validadores costumam checar a URL com HEAD; sem isso a Vercel responde 405.
+export async function HEAD(request: Request) {
+  const response = await GET(request);
+  return new Response(null, { status: response.status, headers: response.headers });
+}
