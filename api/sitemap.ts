@@ -1,4 +1,4 @@
-import { SITE_URL, escapeHtml, supabaseRest } from "./_lib/supabase";
+import { SITE_URL, escapeHtml, supabaseRest } from "./_lib/supabase.js";
 
 // Sitemap gerado a partir do banco: todas as matérias publicadas + páginas fixas + categorias.
 // O PostgREST limita cada resposta a 1000 linhas, por isso a paginação via Range.

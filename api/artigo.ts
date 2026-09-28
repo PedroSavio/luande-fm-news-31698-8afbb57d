@@ -1,4 +1,4 @@
-import { SITE_URL, escapeHtml, supabaseRest } from "./_lib/supabase";
+import { SITE_URL, escapeHtml, supabaseRest } from "./_lib/supabase.js";
 
 // Pré-renderização das matérias. O site é uma SPA: sem isso o Googlebot recebe um
 // <div id="root"></div> vazio e só vê o conteúdo se executar o JS, o que causa o
